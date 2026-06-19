@@ -229,6 +229,53 @@ function renderDetails() {
 function showPanel(panelId) {
   tabPanels.forEach((panel) => panel.classList.toggle('active', panel.id === panelId));
   navButtons.forEach((button) => button.classList.toggle('active', button.dataset.panel === panelId));
+  
+  // Render issues when reports panel is opened
+  if (panelId === 'reports-panel') {
+    renderIssues();
+  }
+}
+
+function renderIssues() {
+  const issuesListEl = document.getElementById('issues-list');
+  if (!issuesListEl) return;
+
+  let issues = [];
+  try {
+    const saved = localStorage.getItem('onbaseIssues');
+    if (saved) {
+      issues = JSON.parse(saved);
+    }
+  } catch (error) {
+    console.error('Failed to load issues', error);
+  }
+
+  // Filter issues based on user role
+  let filteredIssues = issues;
+  if (isFacilitiesUser()) {
+    filteredIssues = issues.filter((issue) => issue.submittedBy === getLoggedInUser());
+  }
+
+  if (filteredIssues.length === 0) {
+    issuesListEl.innerHTML = '<p class="empty-state">No issues submitted.</p>';
+    return;
+  }
+
+  const issuesHtml = filteredIssues.map((issue) => `
+    <div class="issue-card">
+      <div class="issue-header">
+        <h4>${issue.title}</h4>
+        <span class="issue-category">${issue.category}</span>
+      </div>
+      <p class="issue-description">${issue.description}</p>
+      <div class="issue-meta">
+        <span>Submitted by: ${issue.submittedBy}</span>
+        <span>Date: ${new Date(issue.submittedAt).toLocaleDateString()}</span>
+      </div>
+    </div>
+  `).join('');
+
+  issuesListEl.innerHTML = issuesHtml;
 }
 
 navButtons.forEach((button) => {
@@ -259,6 +306,8 @@ loginForm.addEventListener('submit', (event) => {
 function applyUserPermissions() {
   const reportsPanelNav = document.querySelector('[data-panel="reports-panel"]');
   const issueNavBtn = document.getElementById('issue-nav-btn');
+  
+  // Hide Reports menu from Facilities users (they can't see all issues)
   if (reportsPanelNav) {
     if (isFacilitiesUser()) {
       reportsPanelNav.style.display = 'none';
@@ -266,12 +315,10 @@ function applyUserPermissions() {
       reportsPanelNav.style.display = '';
     }
   }
+  
+  // Show Report Issue menu to all users (both can report issues)
   if (issueNavBtn) {
-    if (isFacilitiesUser()) {
-      issueNavBtn.style.display = 'none';
-    } else {
-      issueNavBtn.style.display = '';
-    }
+    issueNavBtn.style.display = '';
   }
 }
 
