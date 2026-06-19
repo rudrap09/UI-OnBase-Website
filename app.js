@@ -93,6 +93,14 @@ function isAuthenticated() {
   return localStorage.getItem('onbaseAuth') === 'true';
 }
 
+function getLoggedInUser() {
+  return localStorage.getItem('onbaseUser');
+}
+
+function isFacilitiesUser() {
+  return getLoggedInUser() === 'Facilities';
+}
+
 function showApp(show) {
   if (show) {
     loginPageEl.classList.add('hidden');
@@ -210,7 +218,7 @@ function renderDetails() {
     <div class="detail-row"><strong>Upload Date</strong><span>${selected.uploaded}</span></div>
     <div class="detail-row"><strong>Description</strong><span>${selected.summary || 'No description provided.'}</span></div>
     ${attachmentHtml}
-    <div class="detail-row"><button id="delete-document-btn" class="secondary-btn">Delete Document</button></div>
+    ${!isFacilitiesUser() ? '<div class="detail-row"><button id="delete-document-btn" class="secondary-btn">Delete Document</button></div>' : ''}
   `;
   const deleteButton = document.getElementById('delete-document-btn');
   if (deleteButton) {
@@ -238,17 +246,31 @@ loginForm.addEventListener('submit', (event) => {
   const password = document.getElementById('login-password').value;
   if (VALID_USERS[username] && VALID_USERS[username] === password) {
     localStorage.setItem('onbaseAuth', 'true');
+    localStorage.setItem('onbaseUser', username);
     loginFeedbackEl.textContent = '';
     showApp(true);
+    applyUserPermissions();
     renderList();
     return;
   }
   loginFeedbackEl.textContent = 'Invalid username or password.';
 });
 
+function applyUserPermissions() {
+  const reportsPanelNav = document.querySelector('[data-panel="reports-panel"]');
+  if (reportsPanelNav) {
+    if (isFacilitiesUser()) {
+      reportsPanelNav.style.display = 'none';
+    } else {
+      reportsPanelNav.style.display = '';
+    }
+  }
+}
+
 if (logoutButton) {
   logoutButton.addEventListener('click', () => {
     localStorage.removeItem('onbaseAuth');
+    localStorage.removeItem('onbaseUser');
     selectedDocumentId = null;
     showApp(false);
   });
@@ -333,4 +355,11 @@ if (hostingClose && hostingModal) {
   hostingModal.addEventListener('click', (e) => {
     if (e.target === hostingModal) hostingModal.setAttribute('aria-hidden', 'true');
   });
+}
+
+// Initialize on page load
+if (isAuthenticated()) {
+  showApp(true);
+  applyUserPermissions();
+  renderList();
 }
