@@ -258,11 +258,19 @@ loginForm.addEventListener('submit', (event) => {
 
 function applyUserPermissions() {
   const reportsPanelNav = document.querySelector('[data-panel="reports-panel"]');
+  const issueNavBtn = document.getElementById('issue-nav-btn');
   if (reportsPanelNav) {
     if (isFacilitiesUser()) {
       reportsPanelNav.style.display = 'none';
     } else {
       reportsPanelNav.style.display = '';
+    }
+  }
+  if (issueNavBtn) {
+    if (isFacilitiesUser()) {
+      issueNavBtn.style.display = 'none';
+    } else {
+      issueNavBtn.style.display = '';
     }
   }
 }
@@ -332,8 +340,50 @@ uploadForm.addEventListener('submit', (event) => {
   finishAdd(fileName);
 });
 
+const issueForm = document.getElementById('issue-form');
+const issueFeedbackEl = document.getElementById('issue-feedback');
+
+issueForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const title = document.getElementById('issue-title').value.trim();
+  const category = document.getElementById('issue-category').value.trim();
+  const description = document.getElementById('issue-description').value.trim();
+
+  if (!title || !category || !description) {
+    issueFeedbackEl.textContent = 'Please fill in all required fields.';
+    return;
+  }
+
+  const issue = {
+    id: `ISSUE-${Date.now()}`,
+    title,
+    category,
+    description,
+    submittedBy: getLoggedInUser(),
+    submittedAt: new Date().toISOString(),
+  };
+
+  // Store issue in localStorage
+  let issues = [];
+  try {
+    const saved = localStorage.getItem('onbaseIssues');
+    if (saved) {
+      issues = JSON.parse(saved);
+    }
+  } catch (error) {
+    console.error('Failed to load issues', error);
+  }
+
+  issues.push(issue);
+  localStorage.setItem('onbaseIssues', JSON.stringify(issues));
+  issueFeedbackEl.textContent = `Issue submitted successfully: "${title}"`;
+  issueForm.reset();
+});
+
 if (isAuthenticated()) {
   showApp(true);
+  applyUserPermissions();
   renderList();
 } else {
   showApp(false);
