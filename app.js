@@ -53,6 +53,11 @@ const sampleDocuments = [
 const AUTH_USERNAME = 'admin';
 const AUTH_PASSWORD = 'OnBase123!';
 
+const VALID_USERS = {
+  'admin': 'OnBase123!',
+  'Facilities': 'Facilities123!'
+};
+
 let documents = loadDocuments();
 let selectedDocumentId = null;
 let currentPdfObjectUrl = null;
@@ -231,7 +236,7 @@ loginForm.addEventListener('submit', (event) => {
   event.preventDefault();
   const username = document.getElementById('login-username').value.trim();
   const password = document.getElementById('login-password').value;
-  if (username === AUTH_USERNAME && password === AUTH_PASSWORD) {
+  if (VALID_USERS[username] && VALID_USERS[username] === password) {
     localStorage.setItem('onbaseAuth', 'true');
     loginFeedbackEl.textContent = '';
     showApp(true);
