@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OnBase.spray.com Document Retrieval</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="login-page" class="login-page">
+    <div class="login-card">
+      <h1>OnBase.spray.com Login</h1>
+      <p>Enter your credentials to manage documents securely.</p>
+      <form id="login-form">
+        <div class="form-row">
+          <label for="login-username">Username</label>
+          <input id="login-username" type="text" placeholder="admin" required />
+        </div>
+        <div class="form-row">
+          <label for="login-password">Password</label>
+          <input id="login-password" type="password" placeholder="Password" required />
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="primary-btn">Sign In</button>
+        </div>
+      </form>
+      <div id="login-feedback" class="feedback"></div>
+      <p class="login-note">Use <strong>admin</strong> / <strong>OnBase123!</strong></p>
+    </div>
+  </div>
+
+  <div id="app-container" class="hidden">
+    <div class="app-shell">
+      <aside class="nav-panel">
+        <div class="brand">
+          <h1>OnBase.spray.com</h1>
+          <p>Document Retrieval</p>
+          <div class="domain-notice">Custom domain: <strong>OnBase.spray.com</strong> — configure GitHub Pages DNS</div>
+        </div>
+      <nav>
+        <button class="nav-item active" data-panel="search-panel">Search Documents</button>
+        <button class="nav-item" data-panel="upload-panel">Add Non-Scanned MSDS</button>
+        <button class="nav-item" data-panel="reports-panel">Reports</button>
+      </nav>
+      <div class="logout-area">
+        <button id="logout-button" class="secondary-btn">Sign Out</button>
+      </div>
+      <!-- summary-card removed: Total Documents not needed -->
+    </aside>
+
+    <main class="content-panel">
+      <header class="page-header">
+        <div>
+          <span class="chip">Document Retrieval</span>
+          <h2>Search, review, and upload MSDS documents</h2>
+          <p>Use this interface to locate documents and add non-scanned MSDS records quickly.</p>
+        </div>
+      </header>
+
+      <section id="search-panel" class="tab-panel active">
+        <div class="toolbar">
+          <div class="search-box">
+            <label for="search-input">Search documents</label>
+            <input id="search-input" type="search" placeholder="Enter document title, manufacturer, or material" />
+          </div>
+          <div class="filters">
+            <label for="category-filter">Category</label>
+            <select id="category-filter">
+              <option value="all">All Documents</option>
+              <option value="msds">MSDS</option>
+              <option value="non-scanned">Non-Scanned MSDS</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-layout">
+          <section class="panel list-panel">
+            <div class="panel-header">
+              <h3>Document Results</h3>
+              <span id="result-count">0 found</span>
+            </div>
+            <div class="document-list" id="document-list"></div>
+          </section>
+
+          <section class="panel detail-panel">
+            <div class="panel-header">
+              <h3>Document Details</h3>
+            </div>
+            <div class="details-card" id="document-details">
+              <p class="empty-state">Select a document to view its details.</p>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="upload-panel" class="tab-panel">
+        <div class="panel upload-panel-inner">
+          <div class="panel-header">
+            <h3>Add Non-Scanned MSDS</h3>
+            <p>Enter metadata and attach the file for a non-scanned MSDS item.</p>
+          </div>
+          <form id="upload-form">
+            <div class="form-row">
+              <label for="doc-title">Document Title</label>
+              <input id="doc-title" type="text" placeholder="e.g. Chemical Safety Data" required />
+            </div>
+            <div class="form-row">
+              <label for="manufacturer">Manufacturer</label>
+              <input id="manufacturer" type="text" placeholder="e.g. Acme Chemicals" required />
+            </div>
+            <div class="form-row">
+              <label for="material">Material / Product</label>
+              <input id="material" type="text" placeholder="e.g. Solvent X" required />
+            </div>
+            <div class="form-row">
+              <label for="description">Description</label>
+              <textarea id="description" rows="4" placeholder="Brief summary of the non-scanned MSDS"></textarea>
+            </div>
+            <div class="form-row">
+              <label for="document-file">Attach File</label>
+              <input id="document-file" type="file" accept=".pdf,.doc,.docx,.txt" />
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="primary-btn">Save Non-Scanned MSDS</button>
+            </div>
+          </form>
+          <div id="upload-feedback" class="feedback"></div>
+        </div>
+      </section>
+
+      <section id="reports-panel" class="tab-panel">
+        <div class="panel report-panel-inner">
+          <div class="panel-header">
+            <h3>Reports & Quick Actions</h3>
+          </div>
+          <div class="report-grid">
+            <div class="report-card">
+              <h4>Recent Uploads</h4>
+              <p id="recent-upload">No recent uploads yet.</p>
+            </div>
+            <div class="report-card">
+              <h4>Non-Scanned Total</h4>
+              <p id="non-scanned-count">0</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+  <div id="hosting-modal" class="hosting-modal" aria-hidden="true">
+    <div class="hosting-modal-content">
+      <button id="hosting-close" class="hosting-close">×</button>
+      <h3>Open / Host This Site</h3>
+      <p>You can open this project locally or publish it so anyone can reach it:</p>
+      <ul>
+        <li><strong>Open locally:</strong> double-click <code>index.html</code> or run a simple HTTP server (see README).</li>
+        <li><strong>Publish:</strong> push the repo to GitHub and enable GitHub Pages or use the provided GitHub Actions workflow to auto-deploy.</li>
+        <li><strong>Quick tip:</strong> a one-line local server: <code>python -m http.server 8000</code></li>
+      </ul>
+      <p>See <a href="README.md">README.md</a> for full instructions.</p>
+    </div>
+  </div>
+</body>
+</html>
