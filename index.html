@@ -39,6 +39,7 @@
         <button class="nav-item active" data-panel="search-panel">Search Documents</button>
         <button class="nav-item" data-panel="upload-panel">Add Non-Scanned MSDS</button>
         <button class="nav-item" data-panel="reports-panel">Reports</button>
+        <button class="nav-item" data-panel="issue-panel" id="issue-nav-btn">Report Issue</button>
       </nav>
       <div class="logout-area">
         <button id="logout-button" class="secondary-btn">Sign Out</button>
@@ -141,6 +142,38 @@
               <p id="non-scanned-count">0</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section id="issue-panel" class="tab-panel">
+        <div class="panel issue-panel-inner">
+          <div class="panel-header">
+            <h3>Report an Issue</h3>
+            <p>Submit a bug report, feature request, or general feedback.</p>
+          </div>
+          <form id="issue-form">
+            <div class="form-row">
+              <label for="issue-title">Issue Title</label>
+              <input id="issue-title" type="text" placeholder="Briefly describe the issue" required />
+            </div>
+            <div class="form-row">
+              <label for="issue-category">Category</label>
+              <select id="issue-category" required>
+                <option value="">Select a category</option>
+                <option value="bug">Bug Report</option>
+                <option value="feature">Feature Request</option>
+                <option value="feedback">General Feedback</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="issue-description">Description</label>
+              <textarea id="issue-description" rows="5" placeholder="Provide detailed information about the issue" required></textarea>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="primary-btn">Submit Issue Report</button>
+            </div>
+          </form>
+          <div id="issue-feedback" class="feedback"></div>
         </div>
       </section>
     </main>
